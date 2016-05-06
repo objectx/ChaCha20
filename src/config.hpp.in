@@ -1,0 +1,9 @@
+#pragma once
+#ifndef config_hpp__39190C12_AC29_400F_9B0C_8C664E83A52D
+#define config_hpp__39190C12_AC29_400F_9B0C_8C664E83A52D    1
+
+#cmakedefine TARGET_LITTLE_ENDIAN
+#cmakedefine TARGET_ALLOWS_UNALIGNED_ACCESS
+#cmakedefine HAVE_SSE3
+
+#endif  /* config_hpp__39190C12_AC29_400F_9B0C_8C664E83A52D */
