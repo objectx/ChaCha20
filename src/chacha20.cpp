@@ -34,12 +34,6 @@ namespace {
             return (v << N_) | (v >> (32 - N_)) ;
         }
 
-#define QUARTERROUND(a,b,c,d) \
-  x[a] = PLUS(x[a],x[b]); x[d] = ROTATE(XOR(x[d],x[a]),16); \
-  x[c] = PLUS(x[c],x[d]); x[b] = ROTATE(XOR(x[b],x[c]),12); \
-  x[a] = PLUS(x[a],x[b]); x[d] = ROTATE(XOR(x[d],x[a]), 8); \
-  x[c] = PLUS(x[c],x[d]); x[b] = ROTATE(XOR(x[b],x[c]), 7);
-
     const char sigma [] = "expand 32-byte k" ;
     const char tau   [] = "expand 16-byte k" ;
 
