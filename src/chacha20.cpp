@@ -47,7 +47,7 @@ namespace {
 
     mask_t  create_mask (const std::array<uint32_t, 16> &state) {
         std::array<uint32_t, 16>    x { state } ;
-        const int32_t   NUM_ROUNDS = 8 ;
+        const int32_t   NUM_ROUNDS = 20 ;
 
         auto quarter_round = [&x](uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
             x [a] += x [b] ; x [d] = rot<16> (x [d] ^ x [a]) ;

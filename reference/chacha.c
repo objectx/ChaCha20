@@ -17,13 +17,13 @@ Public domain.
   x[a] = PLUS(x[a],x[b]); x[d] = ROTATE(XOR(x[d],x[a]), 8); \
   x[c] = PLUS(x[c],x[d]); x[b] = ROTATE(XOR(x[b],x[c]), 7);
 
-static void salsa20_wordtobyte(u8 output[64],const u32 input[16])
+static void chacha20_wordtobyte (u8 *output, const u32 *input)
 {
   u32 x[16];
   int i;
 
   for (i = 0;i < 16;++i) x[i] = input[i];
-  for (i = 8;i > 0;i -= 2) {
+  for (i = 20;i > 0;i -= 2) {
     QUARTERROUND( 0, 4, 8,12)
     QUARTERROUND( 1, 5, 9,13)
     QUARTERROUND( 2, 6,10,14)
@@ -84,7 +84,7 @@ void ECRYPT_encrypt_bytes(ECRYPT_ctx *x,const u8 *m,u8 *c,u32 bytes)
 
   if (!bytes) return;
   for (;;) {
-    salsa20_wordtobyte(output,x->input);
+      chacha20_wordtobyte (output, x->input);
     x->input[12] = PLUSONE(x->input[12]);
     if (!x->input[12]) {
       x->input[13] = PLUSONE(x->input[13]);
