@@ -84,7 +84,23 @@ namespace ChaCha {
         }
     } ;
 
-    void    apply (State &state, void *result, const void *msg, size_t msglen) ;
+    /**
+     * Applies ChaCha20.
+     */
+    void apply (State &state, void *result, const void *msg, size_t msglen) ;
+    /**
+     * Applies ChaCha20 (in place).
+     */
+    void apply (State &state, void *msg, size_t msglen) ;
+
+    /**
+     * Applies ChaCha20.
+     */
+    void apply (State &state, void *result, const void *msg, size_t msglen, size_t offset) ;
+    /**
+     * Applies ChaCha20 (in place).
+     */
+    void apply (State &state, void *msg, size_t msglen, size_t offset) ;
 }
 
 #endif /* chacha20_hpp__EEC06027_E536_4F54_A7C7_1EA72ADB4A38 */

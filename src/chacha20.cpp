@@ -63,6 +63,10 @@ namespace {
 
     using mask_t = std::array<uint8_t, 64> ;
 
+    constexpr size_t offset_to_sequence (size_t offset) {
+        return offset / std::tuple_size<mask_t>::value ;
+    }
+
     mask_t  create_mask (const std::array<uint32_t, 16> &state) {
         std::array<uint32_t, 16>    x { state } ;
         const int32_t   NUM_ROUNDS = 20 ;
@@ -208,21 +212,91 @@ namespace ChaCha {
         auto    out = static_cast<uint8_t *> (result) ;
         auto    in = static_cast<const uint8_t *> (msg) ;
 
-        while (true) {
+        size_t cnt = msglen / std::tuple_size<mask_t>::value ;
+        for (size_t i = 0 ; i < cnt ; ++i) {
             auto const &    mask = create_mask (state.state ()) ;
             state.incrementSequence () ;
-            if (msglen <= mask.size ()) {
-                for (size_t i = 0 ; i < msglen ; ++i) {
-                    out [i] = in [i] ^ mask [i] ;
-                }
-                return ;
-            }
+
             for (size_t i = 0 ; i < mask.size () ; ++i) {
                 out [i] = in [i] ^ mask [i] ;
             }
-            in += mask.size () ;
             out += mask.size () ;
-            msglen -= mask.size () ;
+            in += mask.size () ;
+        }
+        size_t remain = msglen - (cnt * std::tuple_size<mask_t>::value) ;
+        if (0 < remain) {
+            auto const &    mask = create_mask (state.state ()) ;
+            state.incrementSequence () ;
+
+            for (size_t i = 0 ; i < remain ; ++i) {
+                out [i] = in [i] ^ mask [i] ;
+            }
+        }
+    }
+
+    void apply (ChaCha::State &state, void *msg, size_t msglen) {
+        if (msg == nullptr || msglen == 0) {
+            return ;
+        }
+        auto    m = static_cast<uint8_t *> (msg) ;
+
+        size_t cnt = msglen / std::tuple_size<mask_t>::value ;
+        for (size_t i = 0 ; i < cnt ; ++i) {
+            auto const &    mask = create_mask (state.state ()) ;
+            state.incrementSequence () ;
+
+            for (size_t i = 0 ; i < mask.size () ; ++i) {
+                m [i] ^= mask [i] ;
+            }
+            m += mask.size () ;
+        }
+        size_t remain = msglen - (cnt * std::tuple_size<mask_t>::value) ;
+        if (0 < remain) {
+            auto const &    mask = create_mask (state.state ()) ;
+            state.incrementSequence () ;
+
+            for (size_t i = 0 ; i < remain ; ++i) {
+                m [i] ^= mask [i] ;
+            }
+        }
+    }
+
+    void apply (State &state, void *result, const void *msg, size_t msglen, size_t offset) {
+        auto out = static_cast<uint8_t *> (result) ;
+        auto in = static_cast<const uint8_t *> (msg) ;
+        auto end = in + msglen ;
+
+        state.setSequence (offset_to_sequence (offset)) ;
+
+        auto mask = create_mask (state.state ()) ;
+
+        size_t i = static_cast<size_t> (offset % mask.size ()) ;
+        while (in < end) {
+            *out++ = *in++ ^ mask [i++] ;
+            if (mask.size () <= i) {
+                state.incrementSequence () ;
+                mask = create_mask (state.state ()) ;
+                i = 0 ;
+            }
+        }
+    }
+
+    void apply (State &state, void *msg, size_t msglen, size_t offset) {
+        auto m = static_cast<uint8_t *> (msg) ;
+        auto end = m + msglen ;
+
+        state.setSequence (offset_to_sequence (offset)) ;
+
+        auto mask = create_mask (state.state ()) ;
+
+        size_t i = static_cast<size_t> (offset % mask.size ()) ;
+        while (m < end) {
+            *m++ ^= mask [i++] ;
+            if (mask.size () <= i) {
+                state.incrementSequence () ;
+                mask = create_mask (state.state ()) ;
+                i = 0 ;
+            }
         }
     }
 }
