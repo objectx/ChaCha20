@@ -51,13 +51,18 @@ namespace {
             return _mm_or_si128 (t0, t1) ;
         }
 
+    template <>
+        __m128i vrot<16> (__m128i v) {
+            return _mm_shufflehi_epi16 ( _mm_shufflelo_epi16 (v, _MM_SHUFFLE (2, 3, 0, 1))
+                                       , _MM_SHUFFLE (2, 3, 0, 1)) ;
+        }
 #endif
 
     const char sigma [] = "expand 32-byte k" ;
     const char tau   [] = "expand 16-byte k" ;
 
     using mask_t = std::array<uint8_t, 64> ;
-    
+
     mask_t  create_mask (const std::array<uint32_t, 16> &state) {
         std::array<uint32_t, 16>    x { state } ;
         const int32_t   NUM_ROUNDS = 20 ;
