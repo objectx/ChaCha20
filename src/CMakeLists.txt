@@ -36,6 +36,6 @@ endif ()
 
 add_library (chacha20 ${SOURCE_FILES} ${HEADER_FILES})
     target_compile_features (chacha20 PUBLIC cxx_auto_type
-                                      PRIVATE cxx_constexpr cxx_relaxed_constexpr)
+                                      PRIVATE cxx_constexpr)
     target_include_directories (chacha20 PUBLIC ${CHACHA20_SOURCE_DIR}/include
                                          PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

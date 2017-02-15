@@ -17,7 +17,7 @@
 #endif
 
 namespace {
-    constexpr uint32_t asUInt32 (const void *data) {
+    inline uint32_t asUInt32 (const void *data) {
         const uint8_t * p = static_cast<const uint8_t *> (data) ;
         return ( (static_cast<uint32_t> (p [0]) <<  0)
                | (static_cast<uint32_t> (p [1]) <<  8)
@@ -25,7 +25,7 @@ namespace {
                | (static_cast<uint32_t> (p [3]) << 24)) ;
     }
 
-    constexpr uint64_t asUInt64 (const void *data) {
+    inline uint64_t asUInt64 (const void *data) {
         const uint8_t * p = static_cast<const uint8_t *> (data) ;
         return ( (static_cast<uint64_t> (p [0]) <<  0)
                | (static_cast<uint64_t> (p [1]) <<  8)
@@ -38,7 +38,7 @@ namespace {
     }
 
     template <size_t N_>
-        constexpr uint32_t rot (uint32_t v) {
+        uint32_t rot (uint32_t v) {
             return (v << N_) | (v >> (32 - N_)) ;
         }
 
