@@ -59,15 +59,15 @@ TEST_CASE ("Encrypt empty bytes", "[chacha]") {
                 REQUIRE (expected.size () == actual.size ()) ;
                 REQUIRE (expected == actual) ;
             }
-            SECTION ("Encrypt \"The ninja warrior are the immoratal murder machines.\"") {
-                const std::string   src { "The ninja warrior are the immoratal murder machines." };
+            SECTION ("Encrypt \"The ninja warrior are the immortal murder machines.\"") {
+                const std::string   src { "The ninja warrior are the immortal murder machines." };
                 auto const &    expected = encode (ctx, src) ;
                 auto const &    actual = encode (S, src) ;
                 REQUIRE (expected.size () == actual.size ()) ;
                 REQUIRE (expected == actual) ;
             }
-            SECTION ("Encrypt \"The ninja warrior are the immoratal murder machines.\" (splitted)") {
-                const std::string   src { "The ninja warrior are the immoratal murder machines." };
+            SECTION ("Encrypt \"The ninja warrior are the immortal murder machines.\" (splitted)") {
+                const std::string   src { "The ninja warrior are the immortal murder machines." };
                 auto off = src.size () / 2 ;
                 auto const &    expected = encode (ctx, src) ;
                 auto &&    a0 = encode (S, src.substr (0, off), 0) ;
@@ -101,15 +101,15 @@ TEST_CASE ("Encrypt empty bytes", "[chacha]") {
                 REQUIRE (expected.size () == actual.size ()) ;
                 REQUIRE (expected == actual) ;
             }
-            SECTION ("Encrypt \"The ninja warrior are the immoratal murder machines.\"") {
-                const std::string   src { "The ninja warrior are the immoratal murder machines." };
+            SECTION ("Encrypt \"The ninja warrior are the immortal murder machines.\"") {
+                const std::string   src { "The ninja warrior are the immortal murder machines." };
                 auto const &    expected = encode (ctx, src) ;
                 auto const &    actual = encode (S, src) ;
                 REQUIRE (expected.size () == actual.size ()) ;
                 REQUIRE (expected == actual) ;
             }
-            SECTION ("Encrypt \"The ninja warrior are the immoratal murder machines.\" (splitted)") {
-                const std::string   src { "The ninja warrior are the immoratal murder machines." };
+            SECTION ("Encrypt \"The ninja warrior are the immortal murder machines.\" (splitted)") {
+                const std::string   src { "The ninja warrior are the immortal murder machines." };
                 auto off = src.size () / 2 ;
                 auto const &    expected = encode (ctx, src) ;
                 auto &&    a0 = encode (S, src.substr (0, off), 0) ;
