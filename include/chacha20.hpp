@@ -79,7 +79,7 @@ namespace ChaCha {
             return *this ;
         }
 
-        const decltype (state_) &   state () const {
+        auto const &    state () const {
             return state_ ;
         }
     } ;
