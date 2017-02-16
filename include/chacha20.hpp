@@ -16,9 +16,6 @@ namespace ChaCha {
 
     class State final {
     private:
-        static const std::array<uint32_t, 4>    sigma_ ;
-        static const std::array<uint32_t, 4>    tau_ ;
-    private:
         std::array<uint32_t, 16>    state_ ;
     public:
         State () {
