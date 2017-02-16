@@ -68,7 +68,7 @@ namespace {
     }
 
     mask_t  create_mask (const std::array<uint32_t, 16> &state) {
-        std::array<uint32_t, 16>    x { state } ;
+        std::array<uint32_t, 16>    x = state ;
         const int32_t   NUM_ROUNDS = 20 ;
         static_assert ((NUM_ROUNDS % 2) == 0, "# of ROUNDS should be a multiple of 2.") ;
 
@@ -167,11 +167,9 @@ namespace ChaCha {
 
     State & State::setKey (const void *key, size_t size) {
         std::array<uint8_t, 32> K ;
-        if (K.size () < size) {
-            size = K.size () ;
-        }
+
         K.fill (0) ;
-        ::memcpy (K.data (), key, size) ;
+        ::memcpy (K.data (), key, std::min<size_t> (size, K.size ())) ;
         auto const *    k = K.data () ;
         if (size <= 16) {
             state_ [ 0] = asUInt32 (tau +  0) ;
@@ -217,8 +215,8 @@ namespace ChaCha {
             auto const &    mask = create_mask (state.state ()) ;
             state.incrementSequence () ;
 
-            for (size_t i = 0 ; i < mask.size () ; ++i) {
-                out [i] = in [i] ^ mask [i] ;
+            for (size_t j = 0 ; j < mask.size () ; ++j) {
+                out [j] = in [j] ^ mask [j] ;
             }
             out += mask.size () ;
             in += mask.size () ;
@@ -245,8 +243,8 @@ namespace ChaCha {
             auto const &    mask = create_mask (state.state ()) ;
             state.incrementSequence () ;
 
-            for (size_t i = 0 ; i < mask.size () ; ++i) {
-                m [i] ^= mask [i] ;
+            for (size_t j = 0 ; j < mask.size () ; ++j) {
+                m [j] ^= mask [j] ;
             }
             m += mask.size () ;
         }
