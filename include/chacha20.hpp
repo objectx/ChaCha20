@@ -36,7 +36,7 @@ namespace ChaCha {
             this->setKey (key, size) ;
         }
 
-        State (const State &src) : state_ { src.state_ } {
+        State (const State &src) : state_ (src.state_) {
             /* NO-OP */
         }
 
