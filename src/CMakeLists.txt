@@ -1,5 +1,5 @@
 
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 3.7)
 
 include (TestBigEndian)
 include (CheckCXXSourceRuns)
@@ -34,8 +34,12 @@ if (NOT ${CMAKE_CROSSCOMPILING})
     add_definitions ("-DHAVE_CONFIG_HPP")
 endif ()
 
-add_library (chacha20 ${SOURCE_FILES} ${HEADER_FILES})
-    target_compile_features (chacha20 PUBLIC cxx_auto_type cxx_return_type_deduction
-                                      PRIVATE cxx_constexpr)
-    target_include_directories (chacha20 PUBLIC ${CHACHA20_SOURCE_DIR}/include
+function (make_target NAME_)
+    add_library (${NAME_} ${SOURCE_FILES} ${HEADER_FILES})
+#    target_compile_features (${NAME_} PUBLIC cxx_auto_type cxx_return_type_deduction
+#                                      PRIVATE cxx_constexpr)
+    target_include_directories (${NAME_} PUBLIC ${CHACHA20_SOURCE_DIR}/include
                                          PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+endfunction ()
+
+make_target (chacha20)
