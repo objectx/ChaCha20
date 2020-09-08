@@ -14,6 +14,7 @@
 
 #ifdef HAVE_SSE3
 #   include <xmmintrin.h>
+#   include <emmintrin.h>
 #endif
 
 namespace {
