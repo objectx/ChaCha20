@@ -4,12 +4,15 @@
 // Copyright (c) 2016 Masashi Fujita.
 //
 
-#include <doctest/doctest.h>
+#include "chacha20.hpp"
+
+#include "doctest-rapidcheck.hpp"
+
 #include <array>
 #include <vector>
 #include <string>
 
-#include "chacha20.hpp"
+#include <doctest/doctest.h>
 
 extern "C" {
 #include "ecrypt-sync.h"
@@ -36,6 +39,19 @@ namespace {
         ChaCha::apply (state, result.data (), s.data (), s.size (), offset) ;
         return result ;
     }
+    template <typename It_>
+        std::string concat (It_ b, It_ e) {
+            size_t sz = 0;
+            for (auto it = b; it != e; ++it) {
+                sz += it->size ();
+            }
+            std::string result;
+            result.reserve (sz);
+            for (auto it = b; it != e; ++it) {
+                result += *it;
+            }
+            return result;
+        }
 }
 
 TEST_CASE ("Test with small key") {
@@ -130,4 +146,56 @@ TEST_CASE ("Test with large key") {
             }
         }
     }
+}
+
+TEST_CASE ("property") {
+    rc::prop("roundtrip", [](){
+        auto const key_size = *rc::gen::element(16, 32);
+        auto const &key = *rc::gen::container<std::vector<char>> (key_size, rc::gen::arbitrary<char>());
+        auto const &plain = *rc::gen::scale(128, rc::gen::arbitrary<std::string>());
+
+        RC_ASSERT (key.size () == 16 || key.size () == 32);
+        ECRYPT_ctx  ctx ;
+        memset (&ctx, 0, sizeof (ctx)) ;
+
+        ECRYPT_keysetup (&ctx, reinterpret_cast<const u8 *> (key.data ()), 8u * key.size (), 0) ;
+        std::array<uint8_t, 8>  iv ;
+        iv.fill (0) ;
+        ECRYPT_ivsetup (&ctx, static_cast<const u8 *> (iv.data ())) ;
+        ChaCha::State   S { key.data (), key.size (), 0 } ;
+
+        auto const &    state = S.state () ;
+        for (int_fast32_t i = 0 ; i < state.size () ; ++i) {
+            RC_ASSERT (state [i] == ctx.input [i]) ;
+        }
+        auto const &expected = encode(ctx, plain);
+        auto const &actual = encode(S, plain);
+        RC_ASSERT (std::equal(expected.begin (), expected.end (), actual.begin(), actual.end(),
+                              [](auto a, auto b) { return a == b; }));
+    });
+    rc::prop ("splitted inputs", [](){
+        auto const    key_size = *rc::gen::element (16, 32).as ("key_size");
+        auto const    &key     = *rc::gen::container<std::vector<char>> (key_size, rc::gen::arbitrary<char> ()).as ("key");
+        ChaCha::State S { key.data (), key.size () };
+        auto const    &inputs  = *rc::gen::container<std::vector<std::string>> (rc::gen::string<std::string> ()).as ("inputs");
+        auto const &plain = concat (inputs.begin (), inputs.end ());
+        std::string expected;
+        expected.reserve (plain.size ());
+        {
+            auto const &e = encode (S, plain);
+            std::copy (e.begin (), e.end (), std::back_inserter (expected));
+        }
+        std::string actual;
+        actual.reserve (plain.size ());
+        size_t          off = 0;
+        for (auto const &s : inputs) {
+            auto const &e = encode (S, s, off);
+            off += s.size ();
+
+            std::copy (e.begin (), e.end (), std::back_inserter (actual));
+        }
+        RC_TAG(inputs.size (), plain.size ());
+        RC_ASSERT (expected.size () == actual.size ());
+        RC_ASSERT (expected == actual);
+    });
 }
