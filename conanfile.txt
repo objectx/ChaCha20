@@ -1,6 +1,6 @@
 [requires]
-spdlog/1.7.0
-fmt/7.0.3
+doctest/2.4.0
+rapidcheck/1.0.8@objectx/testing
 [generators]
 cmake_paths
 cmake_find_package_multi

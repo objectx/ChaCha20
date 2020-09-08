@@ -22,6 +22,9 @@ setvar_default (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 set (CMAKE_CXX_STANDARD 17)
 
+find_package (doctest)
+find_package (rapidcheck)
+
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 enable_testing ()
