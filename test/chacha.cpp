@@ -1,7 +1,7 @@
 //
 // Created by Masashi Fujita on 2016/05/06.
 //
-// Copyright (c) 2016 Polyphony Digital Inc.
+// Copyright (c) 2016 Masashi Fujita.
 //
 
 #include <doctest/doctest.h>
