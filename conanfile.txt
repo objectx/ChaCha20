@@ -1,0 +1,6 @@
+[requires]
+spdlog/1.7.0
+fmt/7.0.3
+[generators]
+cmake_paths
+cmake_find_package_multi
