@@ -1,12 +1,9 @@
 
-cmake_minimum_required (VERSION 3.7)
+cmake_minimum_required (VERSION 3.16)
 
 include (TestBigEndian)
 include (CheckCXXSourceRuns)
 include (CheckCXXCompilerFlag)
-
-set (SOURCE_FILES chacha20.cpp)
-set (HEADER_FILES ${CHACHA20_SOURCE_DIR}/include/chacha20.hpp)
 
 if (NOT ${CMAKE_CROSSCOMPILING})
     TEST_BIG_ENDIAN (IS_BIG_ENDIAN)
@@ -34,12 +31,9 @@ if (NOT ${CMAKE_CROSSCOMPILING})
     add_definitions ("-DHAVE_CONFIG_HPP")
 endif ()
 
-function (make_target NAME_)
-    add_library (${NAME_} ${SOURCE_FILES} ${HEADER_FILES})
-#    target_compile_features (${NAME_} PUBLIC cxx_auto_type cxx_return_type_deduction
-#                                      PRIVATE cxx_constexpr)
-    target_include_directories (${NAME_} PUBLIC ${CHACHA20_SOURCE_DIR}/include
-                                         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-endfunction ()
-
-make_target (chacha20)
+set (lib_ chacha20)
+    add_library (${lib_})
+    target_compile_features (${lib_} PUBLIC cxx_std_17)
+    target_include_directories (${lib_} PUBLIC ${CHACHA20_SOURCE_DIR}/include
+                                        PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_sources (${lib_} PRIVATE ${CHACHA20_SOURCE_DIR}/include/chacha20.hpp chacha20.cpp)

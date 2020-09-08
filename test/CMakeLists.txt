@@ -1,19 +1,20 @@
 
-cmake_minimum_required (VERSION 3.7)
+cmake_minimum_required (VERSION 3.16)
 
 set (SOURCE_FILES chacha.cpp)
 set (HEADER_FILES catch.hpp)
 
-set_property (SOURCE main.cpp
-              PROPERTY COMPILE_DEFINITIONS "CATCH_CONFIG_MAIN")
-
-add_executable (test-chacha20 ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
-    target_compile_features (test-chacha20 PRIVATE cxx_auto_type)
-    target_link_libraries (test-chacha20 PRIVATE chacha20-ref chacha20)
-
-if (COMMAND cotire)
-    cotire (test-cacha20)
-endif ()
-
+set (app_ test-chacha20)
+    add_executable (${app_})
+    target_compile_features (${app_} PRIVATE cxx_std_17)
+    target_compile_definitions (${app_} PRIVATE DOCTEST_CONFIG_SUPER_FAST_ASSEERTS=1)
+    target_link_libraries (${app_} PRIVATE chacha20-ref chacha20 doctest::doctest rapidcheck::rapidcheck)
+    target_sources (${app_} PRIVATE main.cpp chacha.cpp doctest-rapidcheck.hpp)
+    target_precompile_headers (${app_} PRIVATE
+                               <doctest/doctest.h>
+                               <rapidcheck.h>
+                               <vector>
+                               <utility>)
+    set_source_files_properties (main.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS YES)
 add_test (NAME test-chacha20
           COMMAND test-chacha20 -r compact)

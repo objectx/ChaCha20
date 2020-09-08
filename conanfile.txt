@@ -1,0 +1,6 @@
+[requires]
+doctest/2.4.0
+rapidcheck/1.0.8@objectx/testing
+[generators]
+cmake_paths
+cmake_find_package_multi
