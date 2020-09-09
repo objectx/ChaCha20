@@ -19,23 +19,23 @@
 
 namespace {
     inline uint32_t asUInt32 (const void *data) {
-        const uint8_t * p = static_cast<const uint8_t *> (data) ;
-        return ( (static_cast<uint32_t> (p [0]) <<  0)
-               | (static_cast<uint32_t> (p [1]) <<  8)
-               | (static_cast<uint32_t> (p [2]) << 16)
-               | (static_cast<uint32_t> (p [3]) << 24)) ;
+        auto const *p = static_cast<const uint8_t *> (data);
+        return ((static_cast<uint32_t> (p[0]) << 0u)
+                | (static_cast<uint32_t> (p[1]) << 8u)
+                | (static_cast<uint32_t> (p[2]) << 16u)
+                | (static_cast<uint32_t> (p[3]) << 24u));
     }
 
     inline uint64_t asUInt64 (const void *data) {
-        const uint8_t * p = static_cast<const uint8_t *> (data) ;
-        return ( (static_cast<uint64_t> (p [0]) <<  0)
-               | (static_cast<uint64_t> (p [1]) <<  8)
-               | (static_cast<uint64_t> (p [2]) << 16)
-               | (static_cast<uint64_t> (p [3]) << 24)
-               | (static_cast<uint64_t> (p [4]) << 32)
-               | (static_cast<uint64_t> (p [5]) << 40)
-               | (static_cast<uint64_t> (p [6]) << 48)
-               | (static_cast<uint64_t> (p [7]) << 56)) ;
+        auto const * p = static_cast<const uint8_t *> (data) ;
+        return ( (static_cast<uint64_t> (p [0]) <<  0u)
+               | (static_cast<uint64_t> (p [1]) <<  8u)
+               | (static_cast<uint64_t> (p [2]) << 16u)
+               | (static_cast<uint64_t> (p [3]) << 24u)
+               | (static_cast<uint64_t> (p [4]) << 32u)
+               | (static_cast<uint64_t> (p [5]) << 40u)
+               | (static_cast<uint64_t> (p [6]) << 48u)
+               | (static_cast<uint64_t> (p [7]) << 56u)) ;
     }
 
     template <size_t N_>
@@ -206,14 +206,14 @@ namespace ChaCha {
     }
 
 
-    void apply (ChaCha::State &state, void *result, const void *msg, size_t msglen) {
-        if (msg == nullptr || msglen == 0) {
+    void apply (ChaCha::State &state, void *result, const void *msg, size_t msg_size) {
+        if (msg == nullptr || msg_size == 0) {
             return ;
         }
         auto    out = static_cast<uint8_t *> (result) ;
         auto    in = static_cast<const uint8_t *> (msg) ;
 
-        size_t cnt = msglen / std::tuple_size<mask_t>::value ;
+        size_t cnt = msg_size / std::tuple_size<mask_t>::value ;
         for (size_t i = 0 ; i < cnt ; ++i) {
             auto const &    mask = create_mask (state.state ()) ;
             state.incrementSequence () ;
@@ -224,7 +224,7 @@ namespace ChaCha {
             out += mask.size () ;
             in += mask.size () ;
         }
-        size_t remain = msglen - (cnt * std::tuple_size<mask_t>::value) ;
+        size_t remain = msg_size - (cnt * std::tuple_size<mask_t>::value) ;
         if (0 < remain) {
             auto const &    mask = create_mask (state.state ()) ;
             state.incrementSequence () ;
@@ -235,13 +235,13 @@ namespace ChaCha {
         }
     }
 
-    void apply (ChaCha::State &state, void *msg, size_t msglen) {
-        if (msg == nullptr || msglen == 0) {
+    void apply (ChaCha::State &state, void *msg, size_t msg_size) {
+        if (msg == nullptr || msg_size == 0) {
             return ;
         }
         auto    m = static_cast<uint8_t *> (msg) ;
 
-        size_t cnt = msglen / std::tuple_size<mask_t>::value ;
+        size_t cnt = msg_size / std::tuple_size<mask_t>::value ;
         for (size_t i = 0 ; i < cnt ; ++i) {
             auto const &    mask = create_mask (state.state ()) ;
             state.incrementSequence () ;
@@ -251,7 +251,7 @@ namespace ChaCha {
             }
             m += mask.size () ;
         }
-        size_t remain = msglen - (cnt * std::tuple_size<mask_t>::value) ;
+        size_t remain = msg_size - (cnt * std::tuple_size<mask_t>::value) ;
         if (0 < remain) {
             auto const &    mask = create_mask (state.state ()) ;
             state.incrementSequence () ;
@@ -262,10 +262,10 @@ namespace ChaCha {
         }
     }
 
-    void apply (State &state, void *result, const void *msg, size_t msglen, size_t offset) {
+    void apply (State &state, void *result, const void *msg, size_t msg_size, size_t offset) {
         auto out = static_cast<uint8_t *> (result) ;
         auto in = static_cast<const uint8_t *> (msg) ;
-        auto end = in + msglen ;
+        auto end = in + msg_size ;
 
         state.setSequence (offset_to_sequence (offset)) ;
 
@@ -282,9 +282,9 @@ namespace ChaCha {
         }
     }
 
-    void apply (State &state, void *msg, size_t msglen, size_t offset) {
+    void apply (State &state, void *msg, size_t msg_size, size_t offset) {
         auto m = static_cast<uint8_t *> (msg) ;
-        auto end = m + msglen ;
+        auto end = m + msg_size ;
 
         state.setSequence (offset_to_sequence (offset)) ;
 
