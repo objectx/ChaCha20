@@ -29,7 +29,7 @@ find_package (doctest)
 find_package (rapidcheck)
 
 set (t_ chacha20-build-options)
-    add_library (${t_} INTERFACE)
+    add_library (${t_} INTERFACE include/chacha20/detail.hpp include/chacha20/apply.hpp include/chacha20/state-djb.hpp)
     target_compile_features (${t_} INTERFACE cxx_std_17)
     if (CHACHA20_ENABLE_SANITIZERS)
         target_compile_options (${t_} INTERFACE -fsanitize=address,undefined)

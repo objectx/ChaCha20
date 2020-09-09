@@ -26,14 +26,14 @@ namespace {
         return result ;
     }
 
-    std::vector<uint8_t>    encode (ChaCha::State &state, const std::string &s) {
+    std::vector<uint8_t>    encode (ChaCha::DJB::State &state, const std::string &s) {
         std::vector<uint8_t>    result ;
         result.resize (s.size ()) ;
         ChaCha::apply (state, result.data (), s.data (), s.size ()) ;
         return result ;
     }
 
-    std::vector<uint8_t>    encode (ChaCha::State &state, const std::string &s, size_t offset) {
+    std::vector<uint8_t>    encode (ChaCha::DJB::State &state, const std::string &s, size_t offset) {
         std::vector<uint8_t>    result ;
         result.resize (s.size ()) ;
         ChaCha::apply (state, result.data (), s.data (), s.size (), offset) ;
@@ -64,7 +64,7 @@ TEST_CASE ("Test with small key") {
         std::array<uint8_t, 8> iv;
         iv.fill (0);
         ECRYPT_ivsetup (&ctx, static_cast<const u8 *> (iv.data ()));
-        ChaCha::State S { key.data (), key.size (), 0 };
+        ChaCha::DJB::State S { key.data (), key.size (), 0 };
 
         SUBCASE ("Compare states") {
             auto const        &state = S.state ();
@@ -111,7 +111,7 @@ TEST_CASE ("Test with large key") {
         std::array<uint8_t, 8>  iv ;
         iv.fill (0) ;
         ECRYPT_ivsetup (&ctx, static_cast<const u8 *> (iv.data ())) ;
-        ChaCha::State   S { key.data (), key.size (), 0 } ;
+        ChaCha::DJB::State   S { key.data (), key.size (), 0 } ;
 
         SUBCASE ("Compare states") {
             auto const &    state = S.state () ;
@@ -162,7 +162,7 @@ TEST_CASE ("property") {
         std::array<uint8_t, 8>  iv ;
         iv.fill (0) ;
         ECRYPT_ivsetup (&ctx, static_cast<const u8 *> (iv.data ())) ;
-        ChaCha::State   S { key.data (), key.size (), 0 } ;
+        ChaCha::DJB::State   S { key.data (), key.size (), 0 } ;
 
         auto const &    state = S.state () ;
         for (int_fast32_t i = 0 ; i < state.size () ; ++i) {
@@ -176,7 +176,7 @@ TEST_CASE ("property") {
     rc::prop ("splitted inputs", [](){
         auto const    key_size = *rc::gen::element (16, 32).as ("key_size");
         auto const    &key     = *rc::gen::container<std::vector<char>> (key_size, rc::gen::arbitrary<char> ()).as ("key");
-        ChaCha::State S { key.data (), key.size () };
+        ChaCha::DJB::State S { key.data (), key.size () };
         auto const    &inputs  = *rc::gen::container<std::vector<std::string>> (rc::gen::string<std::string> ()).as ("inputs");
         auto const &plain = concat (inputs.begin (), inputs.end ());
         std::string expected;
