@@ -16,5 +16,12 @@ set (app_ test-chacha20)
                                <vector>
                                <utility>)
     set_source_files_properties (main.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS YES)
+    if (TARGET chacha20-build-options)
+        target_link_libraries (${app_} PRIVATE chacha20-build-options)
+    endif ()
+
+
+
+
 add_test (NAME test-chacha20
           COMMAND test-chacha20 -r compact)
