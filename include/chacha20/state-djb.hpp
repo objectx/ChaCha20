@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ChaCha { inline namespace DJB {
+namespace ChaCha { namespace DJB {
 
     /// @brief Original version of ChaCha20 state definition.
     class State final {
@@ -36,7 +36,49 @@ namespace ChaCha { inline namespace DJB {
         }
 #pragma clang diagnostic pop
 
-        State &setKey (const void *key, size_t size);
+        State &setKey (const void *key, size_t size) {
+            using namespace detail;
+
+            const char sigma[] = "expand 32-byte k";
+            const char tau[]   = "expand 16-byte k";
+
+            std::array<uint8_t, 32> K {};
+            if (K.size () < size) {
+                size = K.size ();
+            }
+            K.fill (0);
+            ::memcpy (K.data (), key, size);
+            auto const *k = K.data ();
+            if (size <= 16) {
+                state_[0]  = asUInt32 (&tau[0]);
+                state_[1]  = asUInt32 (&tau[4]);
+                state_[2]  = asUInt32 (&tau[8]);
+                state_[3]  = asUInt32 (&tau[12]);
+                state_[4]  = asUInt32 (k + 0);
+                state_[5]  = asUInt32 (k + 4);
+                state_[6]  = asUInt32 (k + 8);
+                state_[7]  = asUInt32 (k + 12);
+                state_[8]  = asUInt32 (k + 0);
+                state_[9]  = asUInt32 (k + 4);
+                state_[10] = asUInt32 (k + 8);
+                state_[11] = asUInt32 (k + 12);
+            }
+            else {
+                state_[0]  = asUInt32 (&sigma[0]);
+                state_[1]  = asUInt32 (&sigma[4]);
+                state_[2]  = asUInt32 (&sigma[8]);
+                state_[3]  = asUInt32 (&sigma[12]);
+                state_[4]  = asUInt32 (k + 0);
+                state_[5]  = asUInt32 (k + 4);
+                state_[6]  = asUInt32 (k + 8);
+                state_[7]  = asUInt32 (k + 12);
+                state_[8]  = asUInt32 (k + 16);
+                state_[9]  = asUInt32 (k + 20);
+                state_[10] = asUInt32 (k + 24);
+                state_[11] = asUInt32 (k + 28);
+            }
+            return *this;
+        }
 
         State &setInitialVector (uint64_t iv) {
             state_[12] = 0;

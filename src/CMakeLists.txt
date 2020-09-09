@@ -36,7 +36,13 @@ set (lib_ chacha20)
     target_compile_features (${lib_} PUBLIC cxx_std_17)
     target_include_directories (${lib_} PUBLIC ${CHACHA20_SOURCE_DIR}/include
                                         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-    target_sources (${lib_} PRIVATE ${CHACHA20_SOURCE_DIR}/include/chacha20.hpp chacha20.cpp state-djb.cpp)
+    target_sources (${lib_} PRIVATE
+                    chacha20.cpp
+                    ${CHACHA20_SOURCE_DIR}/include/chacha20.hpp
+                    ${CHACHA20_SOURCE_DIR}/include/chacha20/detail.hpp
+                    ${CHACHA20_SOURCE_DIR}/include/chacha20/apply.hpp
+                    ${CHACHA20_SOURCE_DIR}/include/chacha20/state-djb.hpp
+                    ${CHACHA20_SOURCE_DIR}/include/chacha20/state-rfc7539.hpp)
     if (TARGET chacha20-build-options)
         target_link_libraries (${lib_} PRIVATE chacha20-build-options)
     endif ()
